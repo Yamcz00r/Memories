@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
     provider = "mongodb"
-    url      = "mongodb+srv://admin:admin1@memoriesapp.wivsvtn.mongodb.net/memories?retryWrites=true&w=majority"
+    url      = env("DATABASE_URL")
 }
 
 model User {
@@ -32,14 +32,10 @@ model Post {
     updatedAt      DateTime  @updatedAt
 }
 
-model Comment {
-    id             String   @id @default(auto()) @map("_id") @db.ObjectId
-    content        String
-    likeNumber     Int
-    disslikeNumber Int
-    userId         String
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
-    Post           Post     @relation(fields: [postId], references: [id])
-    postId         String   @db.ObjectId
+type Comment {
+    id        String   @default(uuid())
+    content   String
+    reactions Int
+    userId    String
+    createdAt DateTime @default(now())
 }
