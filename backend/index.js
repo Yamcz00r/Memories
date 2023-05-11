@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 
 const authRoutes = require('./routes/authRoutes');
+const postRoutes = require('./routes/postRoutes');
 
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -27,7 +28,7 @@ const fileFilter = (req, file, cb) => {
 
 app.use(express.json());
 
-app.use('images', express.static(path.join(__dirname + 'images')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(multer({ storage: fileStorage, fileFilter }).single('image'));
 
 app.use((req, res, next) => {
@@ -38,6 +39,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', authRoutes)
+app.use('/content', postRoutes)
+
 
 app.use((err, req, res, next) => {
     const { statusCode = 500, message, data } = err;

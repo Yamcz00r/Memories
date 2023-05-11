@@ -23,19 +23,19 @@ model Post {
     description    String
     tag            String[]
     imageUrl       String?
-    likeNumber     Int
-    disslikeNumber Int
+    likeNumber     Int       @default(0)
     comments       Comment[]
+    disslikeNumber Int       @default(0)
     author         User      @relation(fields: [authorId], references: [id])
     authorId       String    @db.ObjectId
     createdAt      DateTime  @default(now())
     updatedAt      DateTime  @updatedAt
 }
 
-type Comment {
-    id        String   @default(uuid())
-    content   String
-    reactions Int
-    userId    String
-    createdAt DateTime @default(now())
+model Comment {
+    id       String @id @default(auto()) @map("_id") @db.ObjectId
+    authorId String
+    content  String
+    Post     Post   @relation(fields: [postId], references: [id])
+    postId   String @db.ObjectId
 }
