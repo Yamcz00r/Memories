@@ -47,6 +47,18 @@ exports.createPost = async (req, res, next) => {
         }
         next(error);
     }
+}
+exports.createComment = async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        const error = new Error('Validation failed');
+        error.statusCode = 400;
+        error.data = errors.array();
+        throw error;
+    }
+
+    const { postId, content } = req.body;
 
 }
 

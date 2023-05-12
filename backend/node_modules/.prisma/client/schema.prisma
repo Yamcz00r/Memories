@@ -36,6 +36,6 @@ model Comment {
     id       String @id @default(auto()) @map("_id") @db.ObjectId
     authorId String
     content  String
-    Post     Post   @relation(fields: [postId], references: [id])
+    post     Post   @relation(fields: [postId], references: [id])
     postId   String @db.ObjectId
 }
