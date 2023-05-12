@@ -48,6 +48,28 @@ exports.createPost = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.getPosts = async (req, res, next) => {
+    try {
+        const posts = await prisma.post.findMany({
+            include: {
+                comments: true,
+                author: true
+            }
+        });
+        res.status(200).json({
+            posts
+        })
+    } catch (error) {
+        console.log(error)
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+
+}
+
 exports.createComment = async (req, res, next) => {
     const errors = validationResult(req);
 
@@ -57,8 +79,31 @@ exports.createComment = async (req, res, next) => {
         error.data = errors.array();
         throw error;
     }
-
     const { postId, content } = req.body;
+
+    try {
+        const result = await prisma.comment.create({
+            data: {
+                authorId: req.userId,
+                content,
+                post: {
+                    connect: {
+                        id: postId
+                    }
+                }
+            }
+        });
+
+        res.status(201).json({
+            message: 'Comment posted',
+            result
+        })
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
+    }
 
 }
 

@@ -20,6 +20,8 @@ router.post('/post', [
         .withMessage("Make sure you write the tags")
 ], isAuth, postController.createPost)
 
-router.post('/comment', body('content').not().isEmpty().withMessage('Write some content'), postController.createComment)
+router.post('/comment', isAuth, body('content').not().isEmpty().withMessage('Write some content'), postController.createComment)
+
+router.get('/post', postController.getPosts);
 
 module.exports = router;
