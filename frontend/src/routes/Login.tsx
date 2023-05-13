@@ -1,24 +1,20 @@
-import FormControl from "../components/FormControl";
+import Form from "../components/Auth/Form";
+import Navbar from "../components/Auth/Navbar";
 
 const Login = () => {
   return (
-    <main
-      style={{ height: "100vh" }}
-      className="bg-slate-200 h-full flex justify-center items-center "
-    >
-      <section className="flex justify-center gap-3 w-full">
-        <div className="self-center">
-          <h1 className="font-bold text-4xl text-blue-500">Memories</h1>
+    <main className="bg-slate-200 h-screen flex justify-center items-center relative">
+      <Navbar />
+      <section className="w-1/4 p-5">
+        <div className="my-7 text-left w-full">
+          <h1 className="sm:font-bold sm:text-4xl ">Sign In</h1>
         </div>
-        <section className="mx-10 w-1/4 bg-white rounded-md shadow-md p-3">
-          <div className="text-center text-xl my-10 font-semibold">
-            <p>Log in to your account</p>
-          </div>
-          <form className="w-max">
-            <FormControl label="Email" name="email" type="email" />
-            <FormControl label="Password" name="password" type="password" />
-          </form>
-        </section>
+        <div className="text-left font-semibold text-xl my-5">
+          <h2>Login with your email and password</h2>
+        </div>
+        <div className="w-full">
+          <Form />
+        </div>
       </section>
     </main>
   );

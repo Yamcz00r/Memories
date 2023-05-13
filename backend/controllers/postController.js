@@ -67,7 +67,10 @@ exports.getPosts = async (req, res, next) => {
         }
         next(error);
     }
+}
 
+exports.updatePost = (req, res, next) => {
+    const { newTitle, newDescription } = req.body;
 }
 
 exports.createComment = async (req, res, next) => {
