@@ -14,7 +14,13 @@ router.post('/user', [
         .isEmail()
         .withMessage('Please enter a valid email')
         .normalizeEmail(),
-    body('password').trim().isLength({ min: 5 })
+    body('password').custom((password) => {
+        const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        if (!pattern.test(password)) {
+            throw new Error('Invalid password')
+        };
+        return true;
+    })
 ], authController.createUser);
 
 router.post('/login', authController.login);

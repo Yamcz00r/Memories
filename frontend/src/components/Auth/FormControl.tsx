@@ -10,7 +10,6 @@ interface FormControlProps {
 }
 
 export default function FormControl(props: FormControlProps) {
-  console.log(props.value);
   return (
     <div className="w-full my-5">
       <input

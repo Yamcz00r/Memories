@@ -24,18 +24,25 @@ export default function Form() {
   }
 
   function onPasswordChange(event: ChangeEvent<HTMLInputElement>) {
-    if (event.target.value.trim().length === 0) {
-      setPasswordErr("Fill this pole");
-    }
     const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
     if (!pattern.test(event.target.value)) {
       setPasswordErr("Your password dont meet the requirements");
+      // Password must be at least 8 characters long
+      // Password must contain at least one lowercase letter
+      // Password must contain at least one uppercase letter
+      // Password must contain at least one digit
+    } else {
+      setPasswordErr("");
     }
     setPassword(event.target.value);
   }
 
   function onSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (emailErr && passwordErr) {
+      console.log("INVALID DATA");
+      return;
+    }
   }
 
   return (
