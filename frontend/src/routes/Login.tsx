@@ -4,7 +4,7 @@ import Navbar from "../components/Auth/Navbar";
 const Login = () => {
   return (
     <main className="bg-slate-200 h-screen flex justify-center items-center relative">
-      <Navbar />
+      <Navbar type="login"/>
       <section className="w-1/4 p-5">
         <div className="my-7 text-left w-full">
           <h1 className="sm:font-bold sm:text-4xl ">Sign In</h1>
