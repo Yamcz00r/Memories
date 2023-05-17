@@ -1,10 +1,7 @@
 import { useState, ChangeEvent } from "react";
 import FormControl from "./FormControl";
 
-export type Error = {
-  message: string;
-  isError: boolean;
-};
+
 
 export default function Form() {
   const [email, setEmail] = useState("");
