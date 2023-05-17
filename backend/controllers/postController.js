@@ -71,6 +71,7 @@ exports.getPosts = async (req, res, next) => {
 
 exports.updatePost = (req, res, next) => {
     const { newTitle, newDescription } = req.body;
+    
 }
 
 exports.createComment = async (req, res, next) => {
