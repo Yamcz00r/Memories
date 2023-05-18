@@ -3,7 +3,8 @@ const { body } = require('express-validator');
 
 const postController = require('../controllers/postController');
 const router = express.Router();
-const isAuth = require('../middleware/isAuth')
+const isAuth = require('../middleware/isAuth');
+
 
 router.post('/post', [
     body('title')
@@ -24,4 +25,5 @@ router.post('/comment', isAuth, body('content').not().isEmpty().withMessage('Wri
 
 router.get('/post', postController.getPosts);
 
+router.delete('/post', isAuth, postController.deletePost)
 module.exports = router;

@@ -71,7 +71,42 @@ exports.getPosts = async (req, res, next) => {
 
 exports.updatePost = (req, res, next) => {
     const { newTitle, newDescription } = req.body;
-    
+
+}
+
+
+exports.deletePost = async (req, res, next) => {
+    const { postId } = req.params;
+
+    try {
+        const post = await prisma.post.findUnique({
+            where: {
+                id: postId
+            },
+        });
+
+        if (post.authorId.toString() !== req.userId.toString()) {
+            const error = new Error('Not authorized');
+            error.statusCode = 401;
+            throw error
+        }
+
+        clearImage(post.imageUrl);
+
+        const result = await prisma.post.delete({
+            where: {
+                id: postId
+            },
+            include: {
+                comments: true
+            }
+        })
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
+    }
 }
 
 exports.createComment = async (req, res, next) => {
@@ -111,3 +146,9 @@ exports.createComment = async (req, res, next) => {
 
 }
 
+const clearImage = filePath => {
+    filePath = path.join(__dirname, '..', filePath);
+    fs.unlink(filePath, (err) => {
+        console.log(err)
+    })
+};
