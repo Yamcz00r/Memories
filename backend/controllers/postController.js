@@ -17,10 +17,10 @@ exports.createPost = async (req, res, next) => {
         error.statusCode = 400;
         throw error;
     }
-    try {
-        const { title, description, tag } = req.body;
-        const imageUrl = req.file.path.replace("\\", "/");
+    const { title, description, tag } = req.body;
+    const imageUrl = req.file.path.replace("\\", "/");
 
+    try {
         const result = await prisma.post.create({
             data: {
                 title,

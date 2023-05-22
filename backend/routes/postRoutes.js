@@ -4,9 +4,9 @@ const { body } = require('express-validator');
 const postController = require('../controllers/postController');
 const router = express.Router();
 const isAuth = require('../middleware/isAuth');
+const upload = require('../multer');
 
-
-router.post('/post', [
+router.post('/post', upload.single('image'), [
     body('title')
         .not()
         .isEmpty()
@@ -25,5 +25,6 @@ router.post('/comment', isAuth, body('content').not().isEmpty().withMessage('Wri
 
 router.get('/post', postController.getPosts);
 
-router.delete('/post', isAuth, postController.deletePost)
+router.delete('/post', isAuth, postController.deletePost);
+
 module.exports = router;
