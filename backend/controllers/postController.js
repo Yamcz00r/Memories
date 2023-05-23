@@ -36,7 +36,7 @@ exports.createPost = async (req, res, next) => {
             }
         });
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "Created a post",
             result
         })
@@ -58,7 +58,7 @@ exports.getPosts = async (req, res, next) => {
                 author: true
             }
         });
-        res.status(200).json({
+        return res.status(200).json({
             posts
         })
     } catch (error) {
@@ -227,7 +227,7 @@ exports.createComment = async (req, res, next) => {
             }
         });
 
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Comment posted',
             result
         })
