@@ -69,8 +69,61 @@ exports.getPosts = async (req, res, next) => {
     }
 }
 
-exports.updatePost = (req, res, next) => {
-    const { newTitle, newDescription } = req.body;
+exports.updatePost = async (req, res, next) => {
+    const { postId } = req.params;
+    let imagePath = '';
+    try {
+        const existingPost = await prisma.post.findUnique({
+            where: {
+                id: postId
+            }
+        });
+        if (!existingPost) {
+            const error = new Error('Post cant be found!');
+            error.statusCode = 404;
+            throw error;
+        };
+
+        if (req.userId !== existingPost.authorId) {
+            const error = new Error('Not authorized');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        if (!req.file) {
+            imagePath = existingPost.imageUrl;
+        } else {
+            imagePath = req.file.path.replace("\\", "/");
+        };
+
+        const { title, description, tag } = req.body;
+
+
+        const result = await prisma.post.update({
+            where: {
+                id: postId
+            },
+            data: {
+                title,
+                description,
+                tag,
+                imageUrl: imagePath
+            }
+        });
+        clearImage(existingPost.imageUrl);
+        return res.status(200).json({
+            message: 'Successfully updated post',
+            result,
+        })
+
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
+    }
+
+
 
 }
 
