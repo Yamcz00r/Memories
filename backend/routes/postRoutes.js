@@ -21,12 +21,16 @@ router.post('/post', [
         .withMessage("Make sure you write the tags")
 ], isAuth, postController.createPost)
 
-router.put('/post', isAuth, postController.updatePost)
+
 
 router.post('/comment', isAuth, body('content').not().isEmpty().withMessage('Write some content'), postController.createComment)
 
 router.get('/post', postController.getPosts);
 
-router.delete('/post', isAuth, postController.deletePost);
+router.get('/post/single/:postId', postController.getPost);
+
+router.put('/post/:postId', isAuth, postController.updatePost);
+
+router.delete('/post/:postId', isAuth, postController.deletePost);
 
 module.exports = router;

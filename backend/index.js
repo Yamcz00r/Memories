@@ -36,7 +36,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', authRoutes)
-
 app.use('/content', postRoutes)
 
 app.use((err, req, res, next) => {

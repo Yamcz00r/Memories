@@ -1,6 +1,7 @@
 const prisma = require('../prisma/client');
 const { validationResult } = require('express-validator');
-
+const fs = require('fs');
+const path = require('path');
 
 exports.createPost = async (req, res, next) => {
     const errors = validationResult(req);
@@ -69,9 +70,38 @@ exports.getPosts = async (req, res, next) => {
     }
 }
 
+exports.getPost = async (req, res, next) => {
+    const { postId } = req.params;
+    try {
+        const post = await prisma.post.findUnique({
+            where: {
+                id: postId
+            },
+            include: {
+                author: true,
+                comments: true
+            }
+        });
+        if (!post) {
+            const error = new Error('Post cant be found!');
+            error.statusCode = 404;
+            throw error;
+        }
+        return res.status(200).json({
+            message: 'Post was founded',
+            post
+        })
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
+    }
+}
+
 exports.updatePost = async (req, res, next) => {
     const { postId } = req.params;
-    let imagePath = '';
+    const { title, description, tag } = req.body;
     try {
         const existingPost = await prisma.post.findUnique({
             where: {
@@ -88,16 +118,18 @@ exports.updatePost = async (req, res, next) => {
             const error = new Error('Not authorized');
             error.statusCode = 403;
             throw error;
-        }
+        };
 
+        let imagePath = '';
         if (!req.file) {
             imagePath = existingPost.imageUrl;
         } else {
             imagePath = req.file.path.replace("\\", "/");
-        };
+        }
 
-        const { title, description, tag } = req.body;
-
+        if (imagePath !== existingPost.imageUrl) {
+            clearImage(existingPost.imageUrl)
+        }
 
         const result = await prisma.post.update({
             where: {
@@ -110,7 +142,6 @@ exports.updatePost = async (req, res, next) => {
                 imageUrl: imagePath
             }
         });
-        clearImage(existingPost.imageUrl);
         return res.status(200).json({
             message: 'Successfully updated post',
             result,
@@ -122,8 +153,6 @@ exports.updatePost = async (req, res, next) => {
         }
         next(error)
     }
-
-
 
 }
 
@@ -137,6 +166,12 @@ exports.deletePost = async (req, res, next) => {
                 id: postId
             },
         });
+
+        if (!post) {
+            const error = new Error('Cannot find post with this id!');
+            error.statusCode = 404;
+            throw error;
+        }
 
         if (post.authorId.toString() !== req.userId.toString()) {
             const error = new Error('Not authorized');
@@ -153,7 +188,13 @@ exports.deletePost = async (req, res, next) => {
             include: {
                 comments: true
             }
+        });
+
+        return res.status(200).json({
+            message: `Succesfully delated post with id ${post.id}`,
+            result
         })
+
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;
