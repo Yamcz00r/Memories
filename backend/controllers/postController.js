@@ -55,7 +55,8 @@ exports.getPosts = async (req, res, next) => {
         const posts = await prisma.post.findMany({
             include: {
                 comments: true,
-                author: true
+                author: true,
+                reactions: true
             }
         });
         return res.status(200).json({
@@ -79,7 +80,8 @@ exports.getPost = async (req, res, next) => {
             },
             include: {
                 author: true,
-                comments: true
+                comments: true,
+                reactions: true
             }
         });
         if (!post) {
@@ -168,7 +170,12 @@ exports.updatePost = async (req, res, next) => {
 exports.addReaction = async (req, res, next) => {
     const { userId } = req;
     const { postId } = req.params;
-    const { type } = req.body;
+    let { type } = req.body;
+
+    if (type.length === 0) {
+        type = 'like'
+    };
+
 
     try {
         const post = await prisma.post.findUnique({
@@ -182,22 +189,28 @@ exports.addReaction = async (req, res, next) => {
             throw error
         };
 
-        const result = await prisma.post.update({
-            where: {
-                id: postId
-            },
+        const result = await prisma.reaction.create({
             data: {
-
+                userId,
+                type,
+                Post: {
+                    connect: {
+                        id: postId
+                    }
+                }
             }
         });
-
-
-
+        res.status(200).json({
+            message: 'Reaction added',
+            result
+        });
     } catch (error) {
-
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
     }
-
-}
+};
 
 
 exports.deletePost = async (req, res, next) => {
