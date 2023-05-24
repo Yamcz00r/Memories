@@ -100,6 +100,15 @@ exports.getPost = async (req, res, next) => {
 }
 
 exports.updatePost = async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        const error = new Error('Post updating failed');
+        error.statusCode = 400;
+        error.data = errors.array();
+        throw error;
+    };
+
     const { postId } = req.params;
     const { title, description, tag } = req.body;
     try {
@@ -152,6 +161,40 @@ exports.updatePost = async (req, res, next) => {
             error.statusCode = 500;
         }
         next(error)
+    }
+
+};
+
+exports.addReaction = async (req, res, next) => {
+    const { userId } = req;
+    const { postId } = req.params;
+    const { type } = req.body;
+
+    try {
+        const post = await prisma.post.findUnique({
+            where: {
+                id: postId
+            }
+        });
+        if (!post) {
+            const error = new Error('Not found');
+            error.statusCode = 404;
+            throw error
+        };
+
+        const result = await prisma.post.update({
+            where: {
+                id: postId
+            },
+            data: {
+
+            }
+        });
+
+
+
+    } catch (error) {
+
     }
 
 }
