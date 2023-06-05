@@ -22,8 +22,6 @@ export default function Home() {
     event.preventDefault();
   }
 
-  console.log(email, password);
-
   function emailValidation(value: string) {
     const schema = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmail = schema.test(value);
@@ -41,11 +39,15 @@ export default function Home() {
   return (
     <>
       <header className="p-7 mb-32">
-        <div className="font-bold text-3xl ">Memories</div>
+        <div className="font-bold text-3xl md:text-4xl xl:text-3xl">
+          Memories
+        </div>
       </header>
-      <section className="w-1/3 mx-auto">
-        <div className="font-semibold text-2xl text-center mb-5">Log In</div>
-        <Form className="p-5 flex flex-col" onSubmit={onSubmit}>
+      <section className="sm:w-1/2 md:w-3/5 xl:w-1/3 mx-auto">
+        <div className="font-semibold text-2xl text-center mb-5 md:text-3xl xl:text-2xl">
+          Log In
+        </div>
+        <Form type="login" className="p-5 flex flex-col" onSubmit={onSubmit}>
           <Input
             setValue={setEmail}
             type="email"
@@ -62,18 +64,20 @@ export default function Home() {
             error={passwordError}
             setError={setPasswordError}
           />
-          <div>
-            <Link className="text-underline text-blue-400" href="/password">
+          <div className="mb-5">
+            <Link className="text-blue-500 hover:underline " href="/password">
               Forgot password ? Click here to reset
             </Link>
           </div>
-          <button
-            type="submit"
-            className="text-white self-end bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Log In
-          </button>
         </Form>
+        <div className="text-center p-3">
+          <Link
+            className="transition-colors duration-150 border border-blue-700 p-3 rounded-lg hover:bg-blue-700 hover:text-slate-100"
+            href="/signup"
+          >
+            Dosen't have an account? Create it here
+          </Link>
+        </div>
       </section>
     </>
   );

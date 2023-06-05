@@ -53,7 +53,9 @@ function Input({
 
   return (
     <label className="block my-2">
-      <span className="block text-md font-medium text-slate-700">{label}</span>
+      <span className="block text-md font-medium text-slate-700">
+        {type === "password" ? "Password (at least 6 characters)" : `${label}`}
+      </span>
       <input
         type={type}
         onBlur={onBlur}
