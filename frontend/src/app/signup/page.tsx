@@ -3,31 +3,33 @@
 import Input from "@/components/Input";
 import Form from "@/components/Form";
 import { FormEvent, useState } from "react";
-import { Error } from "@/components/Input";
+import { ErrorState } from "@/components/Input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/store/hooks";
+import { insertToken } from "@/store/slices/AuthSlice";
+import { TokenResponse } from "@/types/auth";
 
 export default function Home() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [emailError, setEmailError] = useState<Error>({
+  const [emailError, setEmailError] = useState<ErrorState>({
     isError: false,
     message: "",
   });
-  const [passwordError, setPasswordError] = useState<Error>({
+  const [passwordError, setPasswordError] = useState<ErrorState>({
     isError: false,
     message: "",
   });
-  const [usernameError, setUsernameError] = useState<Error>({
+  const [usernameError, setUsernameError] = useState<ErrorState>({
     isError: false,
     message: "",
   });
 
   async function onSubmit(event: FormEvent) {
-    console.log("HERE");
-    console.log(usernameError, passwordError, emailError);
     event.preventDefault();
     if (passwordError.isError || usernameError.isError || emailError.isError) {
       return;
@@ -52,7 +54,27 @@ export default function Home() {
       }
       const data = await response.json();
 
-      router.push("/");
+      const tokenRequest = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      if (!tokenRequest.ok) {
+        throw new Error("Can't login with this credentials");
+      }
+      const { token }: TokenResponse = await tokenRequest.json();
+
+      dispatch(insertToken(token));
+
+      localStorage.setItem("token", token);
+
+      router.push("/home");
     } catch (error) {
       console.log(error);
     }

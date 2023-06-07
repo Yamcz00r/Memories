@@ -7,11 +7,11 @@ type InputProps = {
   validation: (value: string) => boolean;
   label: string;
   setValue: Dispatch<SetStateAction<string>>;
-  error: Error;
-  setError: Dispatch<SetStateAction<Error>>;
+  error: ErrorState;
+  setError: Dispatch<SetStateAction<ErrorState>>;
 };
 
-export type Error = {
+export type ErrorState = {
   isError: boolean;
   message: string;
 };
@@ -37,7 +37,6 @@ function Input({
     setValue(e.target.value);
 
     const isValidate = validation(e.target.value);
-    console.log(isValidate);
     if (!isValidate) {
       setError({
         isError: true,

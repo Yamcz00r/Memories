@@ -3,23 +3,68 @@
 import Input from "@/components/Input";
 import Form from "@/components/Form";
 import { FormEvent, useState } from "react";
-import { Error } from "@/components/Input";
+import { ErrorState } from "@/components/Input";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { insertToken } from "@/store/slices/AuthSlice";
+import { useRouter } from "next/navigation";
+import type { TokenResponse } from "@/types/auth";
 
 export default function Home() {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState<Error>({
+  const [responseError, setResponseError] = useState<ErrorState>({
     isError: false,
     message: "",
   });
-  const [passwordError, setPasswordError] = useState<Error>({
+  const [emailError, setEmailError] = useState<ErrorState>({
+    isError: false,
+    message: "",
+  });
+  const [passwordError, setPasswordError] = useState<ErrorState>({
     isError: false,
     message: "",
   });
 
-  function onSubmit(event: FormEvent) {
+  async function onSubmit(event: FormEvent) {
     event.preventDefault();
+
+    if (passwordError.isError || emailError.isError) {
+      throw new Error("Email or password is wrong!");
+    }
+
+    try {
+      const tokenRequest = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      if (!tokenRequest.ok) {
+        const error = await tokenRequest.json();
+        setResponseError({
+          isError: true,
+          message: error.message,
+        });
+        return;
+      }
+      const { token }: TokenResponse = await tokenRequest.json();
+
+      localStorage.setItem("token", token);
+
+      dispatch(insertToken(token));
+
+      router.push("/home");
+    } catch (error) {
+      throw error;
+    }
   }
 
   function emailValidation(value: string) {
@@ -35,7 +80,9 @@ export default function Home() {
 
     return isValidPassword;
   }
-
+  if (responseError.isError) {
+    alert(responseError.message);
+  }
   return (
     <>
       <header className="p-7 mb-32">
