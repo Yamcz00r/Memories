@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import { insertToken } from "@/store/slices/AuthSlice";
 import { TokenResponse } from "@/types/auth";
+import { useToast } from "@chakra-ui/react";
 
 export default function Home() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+
   const [emailError, setEmailError] = useState<ErrorState>({
     isError: false,
     message: "",
@@ -29,9 +31,31 @@ export default function Home() {
     message: "",
   });
 
+  const toast = useToast();
+
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (passwordError.isError || usernameError.isError || emailError.isError) {
+      toast({
+        title: "Your form contain errors",
+        description: "Something went wrong. Check your values!",
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 9000,
+      });
+      return;
+    }
+
+    if (email.length === 0 || password.length === 0 || username.length === 0) {
+      toast({
+        title: "Your form contain errors",
+        description: "Something went wrong. Check your values!",
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 9000,
+      });
       return;
     }
 
@@ -49,8 +73,17 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        console.log("Something went wrong!");
-        throw new Error("Something went wrong");
+        const errors = await response.json();
+        console.log(errors);
+        toast({
+          title: "Validation failed",
+          description: errors.message,
+          status: "error",
+          position: "bottom-right",
+          isClosable: true,
+          duration: 9000,
+        });
+        return;
       }
       const data = await response.json();
 
@@ -73,10 +106,25 @@ export default function Home() {
       dispatch(insertToken(token));
 
       localStorage.setItem("token", token);
+      toast({
+        title: "Successfully login",
+        description: "You are successfully logged in",
+        status: "success",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 9000,
+      });
 
       router.push("/home");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      toast({
+        title: "Something went wrong",
+        description: error.message,
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 9000,
+      });
     }
   }
 

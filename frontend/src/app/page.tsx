@@ -9,16 +9,14 @@ import { useDispatch } from "react-redux";
 import { insertToken } from "@/store/slices/AuthSlice";
 import { useRouter } from "next/navigation";
 import type { TokenResponse } from "@/types/auth";
+import { useToast } from "@chakra-ui/react";
 
 export default function Home() {
   const dispatch = useDispatch();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [responseError, setResponseError] = useState<ErrorState>({
-    isError: false,
-    message: "",
-  });
+
   const [emailError, setEmailError] = useState<ErrorState>({
     isError: false,
     message: "",
@@ -28,11 +26,31 @@ export default function Home() {
     message: "",
   });
 
+  const toast = useToast();
+
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
 
+    if (password.length === 0 || email.length === 0) {
+      toast({
+        title: "Validation failed",
+        description: "Something went wrong. Check your values!",
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 9000,
+      });
+    }
+
     if (passwordError.isError || emailError.isError) {
-      throw new Error("Email or password is wrong!");
+      toast({
+        title: "Validation failed",
+        description: "Something went wrong. Check your values!",
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 9000,
+      });
     }
 
     try {
@@ -48,10 +66,15 @@ export default function Home() {
       });
 
       if (!tokenRequest.ok) {
-        const error = await tokenRequest.json();
-        setResponseError({
-          isError: true,
-          message: error.message,
+        const errors = await tokenRequest.json();
+        console.log(errors);
+        toast({
+          title: "Validation failed",
+          description: errors.message,
+          status: "error",
+          position: "bottom-right",
+          isClosable: true,
+          duration: 9000,
         });
         return;
       }
@@ -80,9 +103,7 @@ export default function Home() {
 
     return isValidPassword;
   }
-  if (responseError.isError) {
-    alert(responseError.message);
-  }
+
   return (
     <>
       <header className="p-7 mb-32">
