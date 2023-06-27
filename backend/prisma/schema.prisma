@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    id        String    @id @default(auto()) @map("_id") @db.ObjectId
     userName  String
-    email     String   @unique
+    email     String    @unique
     password  String
     posts     Post[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    comments  Comment[]
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
 }
 
 model Post {
@@ -33,10 +34,11 @@ model Post {
 
 model Comment {
     id       String @id @default(auto()) @map("_id") @db.ObjectId
-    authorId String
     content  String
     post     Post   @relation(fields: [postId], references: [id])
     postId   String @db.ObjectId
+    author   User   @relation(fields: [authorId], references: [id])
+    authorId String @db.ObjectId
 }
 
 model Reaction {

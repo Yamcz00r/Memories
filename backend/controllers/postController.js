@@ -279,7 +279,8 @@ exports.createComment = async (req, res, next) => {
                     connect: {
                         id: postId
                     }
-                }
+                },
+                author
             }
         });
 
