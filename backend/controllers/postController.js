@@ -54,9 +54,12 @@ exports.getPosts = async (req, res, next) => {
     try {
         const posts = await prisma.post.findMany({
             include: {
-                comments: true,
+                comments: {
+                    include: {
+                        author: true
+                    }
+                },
                 author: true,
-                reactions: true
             }
         });
         return res.status(200).json({
@@ -273,14 +276,17 @@ exports.createComment = async (req, res, next) => {
     try {
         const result = await prisma.comment.create({
             data: {
-                authorId: req.userId,
                 content,
                 post: {
                     connect: {
                         id: postId
                     }
                 },
-                author
+                author: {
+                    connect: {
+                        id: req.userId
+                    }
+                }
             }
         });
 

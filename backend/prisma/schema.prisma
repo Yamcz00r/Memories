@@ -19,17 +19,17 @@ model User {
 }
 
 model Post {
-    id          String     @id @default(auto()) @map("_id") @db.ObjectId
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
     title       String
     description String
     tag         String[]
     imageUrl    String?
-    reactions   Reaction[]
+    reactions   Int
     comments    Comment[]
-    author      User       @relation(fields: [authorId], references: [id])
-    authorId    String     @db.ObjectId
-    createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
+    author      User      @relation(fields: [authorId], references: [id])
+    authorId    String    @db.ObjectId
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 }
 
 model Comment {
@@ -39,12 +39,4 @@ model Comment {
     postId   String @db.ObjectId
     author   User   @relation(fields: [authorId], references: [id])
     authorId String @db.ObjectId
-}
-
-model Reaction {
-    id     String @id @default(auto()) @map("_id") @db.ObjectId
-    userId String
-    type   String
-    Post   Post   @relation(fields: [postId], references: [id])
-    postId String @db.ObjectId
 }
