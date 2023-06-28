@@ -20,11 +20,10 @@ model User {
 
 model Post {
     id          String    @id @default(auto()) @map("_id") @db.ObjectId
-    title       String
     description String
     tag         String[]
     imageUrl    String?
-    reactions   Int
+    reactions   Int?
     comments    Comment[]
     author      User      @relation(fields: [authorId], references: [id])
     authorId    String    @db.ObjectId

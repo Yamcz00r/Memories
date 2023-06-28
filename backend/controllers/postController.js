@@ -18,13 +18,12 @@ exports.createPost = async (req, res, next) => {
         error.statusCode = 400;
         throw error;
     }
-    const { title, description, tag } = req.body;
+    const { description, tag } = req.body;
     const imageUrl = req.file.path.replace("\\", "/");
 
     try {
         const result = await prisma.post.create({
             data: {
-                title,
                 description,
                 tag,
                 imageUrl,
@@ -56,10 +55,21 @@ exports.getPosts = async (req, res, next) => {
             include: {
                 comments: {
                     include: {
-                        author: true
+                        author: {
+                            select: {
+                                userName: true,
+                                id: true
+                            }
+                        }
+                    },
+
+                },
+                author: {
+                    select: {
+                        userName: true,
+                        id: true
                     }
                 },
-                author: true,
             }
         });
         return res.status(200).json({
@@ -115,7 +125,7 @@ exports.updatePost = async (req, res, next) => {
     };
 
     const { postId } = req.params;
-    const { title, description, tag } = req.body;
+    const { description, tag } = req.body;
     try {
         const existingPost = await prisma.post.findUnique({
             where: {
@@ -150,7 +160,6 @@ exports.updatePost = async (req, res, next) => {
                 id: postId
             },
             data: {
-                title,
                 description,
                 tag,
                 imageUrl: imagePath
@@ -171,42 +180,38 @@ exports.updatePost = async (req, res, next) => {
 };
 
 exports.addReaction = async (req, res, next) => {
-    const { userId } = req;
     const { postId } = req.params;
-    let { type } = req.body;
-
-    if (type.length === 0) {
-        type = 'like'
-    };
-
-
+    let likeNumber;
     try {
-        const post = await prisma.post.findUnique({
+        const existingPost = await prisma.post.findUnique({
             where: {
                 id: postId
             }
         });
-        if (!post) {
-            const error = new Error('Not found');
+        if (!existingPost) {
+            const error = new Error('Post cant be found!');
             error.statusCode = 404;
-            throw error
+            throw error;
         };
 
-        const result = await prisma.reaction.create({
+        likeNumber = existingPost.reactions + 1;
+
+        console.log(likeNumber)
+        const result = await prisma.post.update({
+            where: {
+                id: postId
+            },
             data: {
-                userId,
-                type,
-                Post: {
-                    connect: {
-                        id: postId
-                    }
-                }
+                reactions: likeNumber
             }
         });
-        res.status(200).json({
-            message: 'Reaction added',
+
+
+        return res.status(201).json({
+            message: 'Successfully reacted to the post',
             result
-        });
+        })
+
     } catch (error) {
         if (!error.statusCode) {
             error.statusCode = 500;

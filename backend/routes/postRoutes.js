@@ -7,10 +7,6 @@ const isAuth = require('../middleware/isAuth');
 
 
 router.post('/post', [
-    body('title')
-        .not()
-        .isEmpty()
-        .withMessage("Make sure you write the tittle"),
     body('description')
         .not()
         .isEmpty()
@@ -30,12 +26,11 @@ router.get('/post', postController.getPosts);
 router.get('/post/single/:postId', postController.getPost);
 
 router.put('/post/:postId', [
-    body('title').not().isEmpty().withMessage("Make sure you write the tittle"),
     body('description').not().isEmpty().withMessage("Make sure you write the description"),
     body('tag').not().isEmpty().withMessage("Make sure you write the tags")
 ], isAuth, postController.updatePost);
 
-router.post('/post/reaction/:postId', isAuth, postController.addReaction)
+router.put('/post/reaction/:postId', isAuth, postController.addReaction)
 
 router.delete('/post/:postId', isAuth, postController.deletePost);
 
