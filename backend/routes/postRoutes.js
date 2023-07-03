@@ -30,7 +30,7 @@ router.put('/post/:postId', [
     body('tag').not().isEmpty().withMessage("Make sure you write the tags")
 ], isAuth, postController.updatePost);
 
-router.put('/post/reaction/:postId', isAuth, postController.addReaction)
+router.put('/post/reaction/:postId', postController.addReaction)
 
 router.delete('/post/:postId', isAuth, postController.deletePost);
 
