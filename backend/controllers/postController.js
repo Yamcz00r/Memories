@@ -69,8 +69,10 @@ exports.getPosts = async (req, res, next) => {
                         id: true
                     }
                 },
-            }
+            },
         });
+
+
         return res.status(200).json({
             posts
         })
@@ -188,6 +190,11 @@ exports.searchPosts = async (req, res, next) => {
                     contains: q,
                     mode: 'insensitive'
                 },
+            },
+            include: {
+                author: true,
+                comments: true,
+                reactions: true
             }
         });
         if (!posts) {
