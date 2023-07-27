@@ -11,10 +11,6 @@ router.post('/post', [
         .not()
         .isEmpty()
         .withMessage("Make sure you write the description"),
-    body('tag')
-        .not()
-        .isEmpty()
-        .withMessage("Make sure you write the tags")
 ], isAuth, postController.createPost)
 
 
@@ -29,7 +25,6 @@ router.get('/search', postController.searchPosts);
 
 router.put('/post/:postId', [
     body('description').not().isEmpty().withMessage("Make sure you write the description"),
-    body('tag').not().isEmpty().withMessage("Make sure you write the tags")
 ], isAuth, postController.updatePost);
 
 router.put('/post/reaction/:postId', postController.addReaction)

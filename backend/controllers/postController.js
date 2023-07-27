@@ -18,14 +18,13 @@ exports.createPost = async (req, res, next) => {
         error.statusCode = 400;
         throw error;
     }
-    const { description, tag } = req.body;
+    const { description } = req.body;
     const imageUrl = req.file.path.replace("\\", "/");
 
     try {
         const result = await prisma.post.create({
             data: {
                 description,
-                tag,
                 imageUrl,
                 author: {
                     connect: {
@@ -125,7 +124,7 @@ exports.updatePost = async (req, res, next) => {
     };
 
     const { postId } = req.params;
-    const { description, tag } = req.body;
+    const { description } = req.body;
     try {
         const existingPost = await prisma.post.findUnique({
             where: {
@@ -161,7 +160,7 @@ exports.updatePost = async (req, res, next) => {
             },
             data: {
                 description,
-                tag,
+
                 imageUrl: imagePath
             }
         });
@@ -269,17 +268,20 @@ exports.deletePost = async (req, res, next) => {
             throw error
         }
 
-        clearImage(post.imageUrl);
 
+        const commentsDelete = await prisma.comment.deleteMany({
+            where: {
+                postId: postId
+            },
+        });
         const result = await prisma.post.delete({
             where: {
                 id: postId
             },
-            include: {
-                comments: true
-            }
         });
 
+
+        clearImage(post.imageUrl);
         return res.status(200).json({
             message: `Succesfully delated post with id ${post.id}`,
             result
