@@ -179,6 +179,32 @@ exports.updatePost = async (req, res, next) => {
 
 };
 
+exports.searchPosts = async (req, res, next) => {
+    const { q } = req.query;
+
+    try {
+        const posts = await prisma.post.findMany({
+            where: {
+                description: {
+                    contains: q,
+                    mode: 'insensitive'
+                },
+            }
+        });
+        if (!posts) {
+            const err = new Error('No post found!');
+            err.statusCode = 404;
+            throw err;
+        }
+        res.status(200).json(posts)
+    } catch (error) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error)
+    }
+}
+
 exports.addReaction = async (req, res, next) => {
     const { postId } = req.params;
     let likeNumber;

@@ -25,6 +25,8 @@ router.get('/post', postController.getPosts);
 
 router.get('/post/single/:postId', postController.getPost);
 
+router.get('/search', postController.searchPosts);
+
 router.put('/post/:postId', [
     body('description').not().isEmpty().withMessage("Make sure you write the description"),
     body('tag').not().isEmpty().withMessage("Make sure you write the tags")
