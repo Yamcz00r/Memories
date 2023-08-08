@@ -182,7 +182,7 @@ exports.updatePost = async (req, res, next) => {
 
 exports.searchPosts = async (req, res, next) => {
     const { q } = req.query;
-
+    console.log(q)
     try {
         const posts = await prisma.post.findMany({
             where: {
@@ -194,8 +194,8 @@ exports.searchPosts = async (req, res, next) => {
             include: {
                 author: true,
                 comments: true,
-                reactions: true
             }
+
         });
         if (!posts) {
             const err = new Error('No post found!');
